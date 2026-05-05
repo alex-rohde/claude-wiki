@@ -47,6 +47,7 @@ nav:
       - Managing Multiple Projects: projects/multiple-claude-md.md
       - Global CLAUDE.md Setup: projects/global-claude-md.md
     - Cowork Projects: projects/cowork-projects.md
+  - Training: training.md
   - Best Practices: best-practices.md
   - Data Privacy: data-privacy.md
   - FAQ: faq.md
