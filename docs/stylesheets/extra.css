@@ -1,0 +1,40 @@
+:root {
+  --md-primary-fg-color: #cc785c;
+  --md-primary-fg-color--light: #e8956d;
+  --md-primary-fg-color--dark: #a85f45;
+  --md-accent-fg-color: #cc785c;
+}
+
+/* Hide site name from left sidebar */
+.md-nav--primary .md-nav__title {
+  display: none;
+}
+
+/* Header logos */
+.header-logos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo {
+  display: block;
+  object-fit: contain;
+}
+
+.header-logo--e2 {
+  height: 40px;
+  width: auto;
+}
+
+.header-logo--claude {
+  height: 36px;
+  width: auto;
+  border-radius: 8px;
+}
+
+.header-logo-divider {
+  width: 1px;
+  height: 28px;
+  background-color: rgba(255, 255, 255, 0.4);
+}

@@ -1,0 +1,54 @@
+site_name: Claude Wiki - E2 Solutions
+site_description: Internal guide for using Claude tools as a developer
+theme:
+  name: material
+  custom_dir: overrides
+  palette:
+    primary: custom
+    accent: custom
+  extra_css:
+    - stylesheets/extra.css
+  features:
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Overview: getting-started/overview.md
+    - Claude.ai Web: getting-started/claude-web.md
+    - Claude Code (CLI): getting-started/claude-code.md
+    - Claude Cowork: getting-started/claude-cowork.md
+  - Coding:
+    - General Coding: coding.md
+    - T-SQL and Stored Procedures: tsql-ssms.md
+  - Projects and Memory:
+    - Overview: projects/overview.md
+    - Web Projects: projects/web-projects.md
+    - Claude Code:
+      - Creating a CLAUDE.md: projects/creating-claude-md.md
+      - Managing Multiple Projects: projects/multiple-claude-md.md
+      - Global CLAUDE.md Setup: projects/global-claude-md.md
+    - Cowork Projects: projects/cowork-projects.md
+  - Best Practices: best-practices.md
+  - Data Privacy: data-privacy.md
+  - FAQ: faq.md
+  - Important Notes: important-notes.md
+  - Snake Break: snake-break.md

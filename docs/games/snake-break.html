@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Break</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+        }
+
+        #gameContainer {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        #gameCanvas {
+            border: 3px solid #fff;
+            background: #1a1a2e;
+            display: block;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+
+        .info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #gameOver {
+            color: #ff6b6b;
+            font-size: 42px;
+            font-weight: bold;
+            margin: 15px 0;
+            display: none;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls {
+            margin-top: 15px;
+            color: #fff;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        #nextShape {
+            margin: 10px 0;
+            color: #fff;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="highScore" style="color: #ffd700; font-size: 18px; margin-bottom: 10px; font-weight: bold;">High Score: 0 - ---</div>
+        <div class="info">
+            <div id="score">Score: 0</div>
+            <div id="length">Length: 1</div>
+        </div>
+        <div id="nextShape">Next to Shoot: None</div>
+        <canvas id="gameCanvas" width="700" height="700"></canvas>
+        <div id="gameOver">GAME OVER!</div>
+        <div class="controls">
+            Arrow Keys or WASD: Move Snake | Space: Shoot Last Segment<br>
+            Collect shapes to grow | Match with border blocks to clear space<br>
+            R: Restart
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const lengthDisplay = document.getElementById('length');
+        const nextShapeDisplay = document.getElementById('nextShape');
+        const gameOverDisplay = document.getElementById('gameOver');
+        const highScoreDisplay = document.getElementById('highScore');
+
+        // Game settings
+        const gridSize = 20;
+        const tileCount = 35; // 700/20 = 35 tiles
+        const innerPlayArea = 7; // Border width in tiles
+
+        // Game state
+        let gameRunning = true;
+        let score = 0;
+        let speed = 10; // Game updates per second
+        let lastUpdateTime = 0;
+
+        // High score management
+        let highScore = 0;
+        let highScoreName = '---';
+
+        function loadHighScore() {
+            const saved = localStorage.getItem('snakeBreakHighScore');
+            if (saved) {
+                const data = JSON.parse(saved);
+                highScore = data.score || 0;
+                highScoreName = data.name || '---';
+            }
+            updateHighScoreDisplay();
+        }
+
+        function saveHighScore(score, name) {
+            highScore = score;
+            highScoreName = name;
+            localStorage.setItem('snakeBreakHighScore', JSON.stringify({
+                score: score,
+                name: name
+            }));
+            updateHighScoreDisplay();
+        }
+
+        function updateHighScoreDisplay() {
+            highScoreDisplay.textContent = `High Score: ${highScore} - ${highScoreName}`;
+        }
+
+        function checkHighScore() {
+            if (score > highScore) {
+                let name = prompt('New High Score! Enter your name (max 5 characters):');
+                if (name) {
+                    name = name.trim().substring(0, 5).toUpperCase();
+                    if (name.length === 0) name = '---';
+                } else {
+                    name = '---';
+                }
+                saveHighScore(score, name);
+            }
+        }
+
+        // Shape types
+        const shapeTypes = ['circle', 'square', 'triangle', 'diamond', 'star'];
+        const shapeColors = {
+            circle: '#4ecdc4',
+            square: '#ff6b6b',
+            triangle: '#ffd93d',
+            diamond: '#95e1d3',
+            star: '#f38181'
+        };
+
+        // Snake
+        let snake = [{x: 17, y: 17}];
+        let direction = {x: 0, y: 0};
+        let nextDirection = {x: 0, y: 0};
+        let snakeShapes = []; // Shapes in each segment
+
+        // Collectible shapes
+        let collectibles = [];
+        const maxCollectibles = 3;
+
+        // Border blocks
+        let borderBlocks = [];
+
+        // Projectiles
+        let projectiles = [];
+
+        // Initialize border blocks
+        function createBorderBlocks() {
+            borderBlocks = [];
+            // Fill all tiles in the border area (7 layers deep)
+            for (let y = 0; y < tileCount; y++) {
+                for (let x = 0; x < tileCount; x++) {
+                    // Check if this tile is in the border region
+                    if (x < innerPlayArea || x >= tileCount - innerPlayArea ||
+                        y < innerPlayArea || y >= tileCount - innerPlayArea) {
+                        borderBlocks.push({
+                            x: x,
+                            y: y,
+                            shape: shapeTypes[Math.floor(Math.random() * shapeTypes.length)]
+                        });
+                    }
+                }
+            }
+        }
+
+        // Spawn collectible
+        function spawnCollectible() {
+            if (collectibles.length >= maxCollectibles) return;
+
+            let x, y;
+            let attempts = 0;
+            do {
+                x = Math.floor(Math.random() * (tileCount - 2 * innerPlayArea)) + innerPlayArea;
+                y = Math.floor(Math.random() * (tileCount - 2 * innerPlayArea)) + innerPlayArea;
+                attempts++;
+            } while ((isOccupied(x, y) || isBorder(x, y)) && attempts < 50);
+
+            if (attempts < 50) {
+                collectibles.push({
+                    x: x,
+                    y: y,
+                    shape: shapeTypes[Math.floor(Math.random() * shapeTypes.length)]
+                });
+            }
+        }
+
+        // Check if position is occupied
+        function isOccupied(x, y) {
+            return snake.some(segment => segment.x === x && segment.y === y) ||
+                   collectibles.some(c => c.x === x && c.y === y);
+        }
+
+        // Check if position is border
+        function isBorder(x, y) {
+            return borderBlocks.some(b => b.x === x && b.y === y);
+        }
+
+        // Remove matching adjacent shapes (chain reaction)
+        function removeAdjacentMatching(startX, startY, shape) {
+            const toRemove = [];
+            const visited = new Set();
+            const queue = [{x: startX, y: startY}];
+
+            while (queue.length > 0) {
+                const pos = queue.shift();
+                const key = `${pos.x},${pos.y}`;
+
+                if (visited.has(key)) continue;
+                visited.add(key);
+
+                // Find matching block at this position
+                const blockIndex = borderBlocks.findIndex(b =>
+                    b.x === pos.x && b.y === pos.y && b.shape === shape
+                );
+
+                if (blockIndex !== -1) {
+                    toRemove.push(blockIndex);
+
+                    // Check all 4 adjacent positions
+                    const adjacent = [
+                        {x: pos.x + 1, y: pos.y},
+                        {x: pos.x - 1, y: pos.y},
+                        {x: pos.x, y: pos.y + 1},
+                        {x: pos.x, y: pos.y - 1}
+                    ];
+
+                    adjacent.forEach(adj => {
+                        const adjKey = `${adj.x},${adj.y}`;
+                        if (!visited.has(adjKey)) {
+                            queue.push(adj);
+                        }
+                    });
+                }
+            }
+
+            // Remove all matching blocks and calculate score
+            let totalScore = 0;
+            toRemove.sort((a, b) => b - a); // Remove from end to avoid index issues
+            toRemove.forEach((index, count) => {
+                borderBlocks.splice(index, 1);
+                totalScore += 20 + count; // Base 20 + bonus for each additional
+            });
+
+            return {count: toRemove.length, score: totalScore};
+        }
+
+        // Draw shape
+        function drawShape(x, y, shape, alpha = 1) {
+            const centerX = x * gridSize + gridSize / 2;
+            const centerY = y * gridSize + gridSize / 2;
+            const size = gridSize * 0.35;
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = shapeColors[shape];
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1.5;
+
+            switch (shape) {
+                case 'circle':
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                case 'square':
+                    ctx.fillRect(centerX - size, centerY - size, size * 2, size * 2);
+                    ctx.strokeRect(centerX - size, centerY - size, size * 2, size * 2);
+                    break;
+                case 'triangle':
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY - size);
+                    ctx.lineTo(centerX - size, centerY + size);
+                    ctx.lineTo(centerX + size, centerY + size);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                case 'diamond':
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY - size);
+                    ctx.lineTo(centerX + size, centerY);
+                    ctx.lineTo(centerX, centerY + size);
+                    ctx.lineTo(centerX - size, centerY);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                case 'star':
+                    drawStar(centerX, centerY, 5, size, size * 0.5);
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+            }
+            ctx.restore();
+        }
+
+        // Draw star helper
+        function drawStar(cx, cy, spikes, outerRadius, innerRadius) {
+            let rot = Math.PI / 2 * 3;
+            let x = cx;
+            let y = cy;
+            const step = Math.PI / spikes;
+
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - outerRadius);
+            for (let i = 0; i < spikes; i++) {
+                x = cx + Math.cos(rot) * outerRadius;
+                y = cy + Math.sin(rot) * outerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+
+                x = cx + Math.cos(rot) * innerRadius;
+                y = cy + Math.sin(rot) * innerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+            }
+            ctx.lineTo(cx, cy - outerRadius);
+            ctx.closePath();
+        }
+
+        // Draw border shape (white fill and border)
+        function drawBorderShape(x, y, shape) {
+            const centerX = x * gridSize + gridSize / 2;
+            const centerY = y * gridSize + gridSize / 2;
+            const size = gridSize * 0.35;
+
+            ctx.save();
+            ctx.fillStyle = '#fff';
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+
+            switch (shape) {
+                case 'circle':
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                case 'square':
+                    ctx.fillRect(centerX - size, centerY - size, size * 2, size * 2);
+                    ctx.strokeRect(centerX - size, centerY - size, size * 2, size * 2);
+                    break;
+                case 'triangle':
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY - size);
+                    ctx.lineTo(centerX - size, centerY + size);
+                    ctx.lineTo(centerX + size, centerY + size);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                case 'diamond':
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY - size);
+                    ctx.lineTo(centerX + size, centerY);
+                    ctx.lineTo(centerX, centerY + size);
+                    ctx.lineTo(centerX - size, centerY);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                case 'star':
+                    drawStar(centerX, centerY, 5, size, size * 0.5);
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+            }
+            ctx.restore();
+        }
+
+        // Draw game
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw border blocks
+            borderBlocks.forEach(block => {
+                drawBorderShape(block.x, block.y, block.shape);
+            });
+
+            // Draw collectibles
+            collectibles.forEach(c => {
+                drawShape(c.x, c.y, c.shape);
+            });
+
+            // Draw snake
+            snake.forEach((segment, index) => {
+                // Snake body
+                ctx.fillStyle = index === 0 ? '#00ff00' : '#33cc33';
+                ctx.fillRect(segment.x * gridSize + 2, segment.y * gridSize + 2,
+                           gridSize - 4, gridSize - 4);
+
+                // Draw shape on segment if it has one
+                if (snakeShapes[index]) {
+                    drawShape(segment.x, segment.y, snakeShapes[index]);
+                }
+
+                // Draw eyes on head
+                if (index === 0) {
+                    ctx.fillStyle = '#fff';
+                    const eyeSize = 3;
+                    if (direction.x !== 0 || direction.y !== 0) {
+                        if (direction.x > 0) { // Right
+                            ctx.fillRect(segment.x * gridSize + 12, segment.y * gridSize + 5, eyeSize, eyeSize);
+                            ctx.fillRect(segment.x * gridSize + 12, segment.y * gridSize + 12, eyeSize, eyeSize);
+                        } else if (direction.x < 0) { // Left
+                            ctx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 5, eyeSize, eyeSize);
+                            ctx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 12, eyeSize, eyeSize);
+                        } else if (direction.y > 0) { // Down
+                            ctx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 12, eyeSize, eyeSize);
+                            ctx.fillRect(segment.x * gridSize + 12, segment.y * gridSize + 12, eyeSize, eyeSize);
+                        } else if (direction.y < 0) { // Up
+                            ctx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 5, eyeSize, eyeSize);
+                            ctx.fillRect(segment.x * gridSize + 12, segment.y * gridSize + 5, eyeSize, eyeSize);
+                        }
+                    }
+                }
+            });
+
+            // Draw projectiles
+            projectiles.forEach(proj => {
+                drawShape(proj.x, proj.y, proj.shape, 0.8);
+            });
+        }
+
+        // Update game
+        function update() {
+            if (!gameRunning) return;
+
+            // Update direction
+            direction = {...nextDirection};
+
+            // Move snake
+            if (direction.x !== 0 || direction.y !== 0) {
+                const head = {
+                    x: snake[0].x + direction.x,
+                    y: snake[0].y + direction.y
+                };
+
+                // Check collision with self
+                if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                    gameOver();
+                    return;
+                }
+
+                // Check collision with border
+                if (isBorder(head.x, head.y)) {
+                    gameOver();
+                    return;
+                }
+
+                // Check collision with collectible
+                const collectibleIndex = collectibles.findIndex(c => c.x === head.x && c.y === head.y);
+                if (collectibleIndex !== -1) {
+                    const collected = collectibles[collectibleIndex];
+                    collectibles.splice(collectibleIndex, 1);
+                    snake.push({...snake[snake.length - 1]});
+                    snakeShapes.push(collected.shape);
+                    score += 10;
+                    scoreDisplay.textContent = `Score: ${score}`;
+                    lengthDisplay.textContent = `Length: ${snake.length}`;
+                    updateNextShapeDisplay();
+                }
+
+                // Move snake
+                snake.unshift(head);
+                if (collectibleIndex === -1) {
+                    snake.pop();
+                }
+            }
+
+            // Update projectiles
+            projectiles = projectiles.filter(proj => {
+                proj.x += proj.dx;
+                proj.y += proj.dy;
+
+                // Round to nearest grid position for collision check
+                const gridX = Math.round(proj.x);
+                const gridY = Math.round(proj.y);
+
+                // Check collision with border blocks
+                const hitBlockIndex = borderBlocks.findIndex(b =>
+                    b.x === gridX && b.y === gridY
+                );
+
+                if (hitBlockIndex !== -1) {
+                    const block = borderBlocks[hitBlockIndex];
+                    if (block.shape === proj.shape) {
+                        // Match! Remove the border block and all adjacent matching blocks
+                        const result = removeAdjacentMatching(block.x, block.y, proj.shape);
+                        score += result.score;
+                        scoreDisplay.textContent = `Score: ${score}`;
+                        return false;
+                    } else {
+                        // Miss! The projectile sticks one tile back from where it hit
+                        let stickX = gridX;
+                        let stickY = gridY;
+
+                        // Move back one tile in opposite direction of travel
+                        if (Math.abs(proj.dx) > 0) {
+                            stickX = gridX - Math.sign(proj.dx);
+                        }
+                        if (Math.abs(proj.dy) > 0) {
+                            stickY = gridY - Math.sign(proj.dy);
+                        }
+
+                        // Ensure we're not placing on snake or existing border
+                        const snakeAtPosition = snake.some(s => s.x === stickX && s.y === stickY);
+                        const borderAtPosition = borderBlocks.some(b => b.x === stickX && b.y === stickY);
+
+                        if (!snakeAtPosition && !borderAtPosition) {
+                            borderBlocks.push({
+                                x: stickX,
+                                y: stickY,
+                                shape: proj.shape
+                            });
+                        }
+                        return false;
+                    }
+                }
+
+                // Remove if out of bounds (hits edge)
+                if (proj.x < 0 || proj.x >= tileCount || proj.y < 0 || proj.y >= tileCount) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            // Spawn new collectibles
+            if (Math.random() < 0.05) {
+                spawnCollectible();
+            }
+        }
+
+        // Shoot projectile
+        function shoot() {
+            if (snakeShapes.length === 0 || direction.x === 0 && direction.y === 0) return;
+
+            const lastShape = snakeShapes.pop();
+            snake.pop();
+            lengthDisplay.textContent = `Length: ${snake.length}`;
+            updateNextShapeDisplay();
+
+            projectiles.push({
+                x: snake[0].x,
+                y: snake[0].y,
+                dx: direction.x * 0.5,
+                dy: direction.y * 0.5,
+                shape: lastShape
+            });
+        }
+
+        // Update next shape display
+        function updateNextShapeDisplay() {
+            if (snakeShapes.length > 0) {
+                const shape = snakeShapes[snakeShapes.length - 1];
+                nextShapeDisplay.innerHTML = `Next to Shoot: <span style="color: ${shapeColors[shape]}">${shape.toUpperCase()}</span>`;
+            } else {
+                nextShapeDisplay.textContent = 'Next to Shoot: None';
+            }
+        }
+
+        // Game over
+        function gameOver() {
+            gameRunning = false;
+            gameOverDisplay.style.display = 'block';
+            checkHighScore();
+        }
+
+        // Restart game
+        function restartGame() {
+            gameRunning = true;
+            score = 0;
+            snake = [{x: 17, y: 17}];
+            snakeShapes = [];
+            direction = {x: 0, y: 0};
+            nextDirection = {x: 0, y: 0};
+            collectibles = [];
+            projectiles = [];
+            scoreDisplay.textContent = `Score: ${score}`;
+            lengthDisplay.textContent = `Length: ${snake.length}`;
+            gameOverDisplay.style.display = 'none';
+            createBorderBlocks();
+            updateNextShapeDisplay();
+            for (let i = 0; i < 3; i++) spawnCollectible();
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning && e.key !== 'r' && e.key !== 'R') return;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'w':
+                case 'W':
+                    if (direction.y === 0) nextDirection = {x: 0, y: -1};
+                    e.preventDefault();
+                    break;
+                case 'ArrowDown':
+                case 's':
+                case 'S':
+                    if (direction.y === 0) nextDirection = {x: 0, y: 1};
+                    e.preventDefault();
+                    break;
+                case 'ArrowLeft':
+                case 'a':
+                case 'A':
+                    if (direction.x === 0) nextDirection = {x: -1, y: 0};
+                    e.preventDefault();
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                case 'D':
+                    if (direction.x === 0) nextDirection = {x: 1, y: 0};
+                    e.preventDefault();
+                    break;
+                case ' ':
+                    shoot();
+                    e.preventDefault();
+                    break;
+                case 'r':
+                case 'R':
+                    restartGame();
+                    break;
+            }
+        });
+
+        // Game loop
+        function gameLoop(timestamp) {
+            const deltaTime = timestamp - lastUpdateTime;
+
+            if (deltaTime >= 1000 / speed) {
+                update();
+                lastUpdateTime = timestamp;
+            }
+
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start game
+        loadHighScore();
+        createBorderBlocks();
+        for (let i = 0; i < 3; i++) spawnCollectible();
+        updateNextShapeDisplay();
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>

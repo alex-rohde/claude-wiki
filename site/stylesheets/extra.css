@@ -1,0 +1,35 @@
+:root {
+  --md-primary-fg-color: #7b1c1c;
+  --md-primary-fg-color--light: #a52626;
+  --md-primary-fg-color--dark: #5a1414;
+  --md-accent-fg-color: #7b1c1c;
+}
+
+/* Header logos */
+.header-logos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo {
+  display: block;
+  object-fit: contain;
+}
+
+.header-logo--e2 {
+  height: 40px;
+  width: auto;
+}
+
+.header-logo--anthropic {
+  height: 28px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+
+.header-logo-divider {
+  width: 1px;
+  height: 28px;
+  background-color: rgba(255, 255, 255, 0.4);
+}
