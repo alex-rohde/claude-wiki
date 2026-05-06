@@ -41,6 +41,7 @@ nav:
     - General Coding: coding.md
     - T-SQL Claude.ai Web: tsql-ssms.md
     - T-SQL Claude Code: tsql-claude-code.md
+    - T-SQL Automated Testing: tsql-automated-testing.md
   - Projects and Memory:
     - Overview: projects/overview.md
     - Web Projects: projects/web-projects.md
