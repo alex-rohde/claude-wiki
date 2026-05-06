@@ -10,19 +10,22 @@ If you work across multiple customers or databases, you need each one to have it
 ~/sql/
 ├── CLAUDE.md                        ← global conventions (applies to all sessions)
 ├── eplus/
-│   ├── aad/
-│   │   └── CLAUDE.md               ← ePlus AAD schema and environment
-│   └── wms/
-│       └── CLAUDE.md               ← ePlus WMS schema and environment
-├── customer2/
-│   └── prod/
-│       └── CLAUDE.md               ← Customer 2 production schema
-└── customer3/
-    └── dev/
-        └── CLAUDE.md               ← Customer 3 dev schema
+│   ├── aad-dev/
+│   │   └── CLAUDE.md               ← ePlus AAD dev schema and environment
+│   ├── aad-uat/
+│   │   └── CLAUDE.md               ← ePlus AAD UAT schema and environment
+│   └── aad-prod/
+│       └── CLAUDE.md               ← ePlus AAD prod schema and environment
+└── customer2/
+    ├── aad-dev/
+    │   └── CLAUDE.md               ← Customer 2 AAD dev schema
+    ├── aad-uat/
+    │   └── CLAUDE.md               ← Customer 2 AAD UAT schema
+    └── aad-prod/
+        └── CLAUDE.md               ← Customer 2 AAD prod schema
 ```
 
-When you start Claude Code from `~/sql/eplus/aad/`, it loads that folder's `CLAUDE.md` **plus** `~/sql/CLAUDE.md`. Starting from `~/sql/customer2/prod/` loads that one plus the global. No context bleed between customers or environments.
+When you start Claude Code from `~/sql/eplus/aad-prod/`, it loads that folder's `CLAUDE.md` **plus** `~/sql/CLAUDE.md`. Starting from `~/sql/customer2/aad-dev/` loads that one plus the global. No context bleed between customers or environments.
 
 ---
 
@@ -43,7 +46,7 @@ Then follow the [Creating a CLAUDE.md](creating-claude-md.md) process from insid
 | File | Loads when | Use for |
 |---|---|---|
 | `~/sql/CLAUDE.md` | Every session started under `~/sql/` | Global SQL conventions — formatting rules, `usp_` prefix, `SET NOCOUNT ON`, etc. |
-| `~/sql/eplus/aad/CLAUDE.md` | Sessions started from that folder | ePlus AAD schema, table definitions, environment-specific notes |
-| `~/sql/customer2/prod/CLAUDE.md` | Sessions started from that folder | Customer 2 production schema, conventions, environment |
+| `~/sql/eplus/aad-prod/CLAUDE.md` | Sessions started from that folder | ePlus AAD prod schema, table definitions, environment-specific notes |
+| `~/sql/customer2/aad-dev/CLAUDE.md` | Sessions started from that folder | Customer 2 AAD dev schema, conventions, environment |
 
 Keep schema and customer-specific context in the environment-level `CLAUDE.md`. Put conventions that apply to all your SQL work in `~/sql/CLAUDE.md`.

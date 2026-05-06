@@ -20,21 +20,27 @@ Create a dedicated folder for the customer and environment. The top-level `~/sql
 
 ```
 ~/sql/
-  CLAUDE.md                        ← global conventions (applies to all sessions)
-  customer-name/
-    environment/                   ← e.g., prod, dev, aad, wms
-      CLAUDE.md                    ← schema and conventions for this customer/environment
-      sprocs/
-      queries/
-      scripts/
+├── CLAUDE.md                        ← global conventions (applies to all sessions)
+├── customer-name/
+│   ├── aad-dev/
+│   │   └── CLAUDE.md               ← customer AAD dev schema and environment
+│   ├── aad-uat/
+│   │   └── CLAUDE.md               ← customer AAD UAT schema and environment
+│   └── aad-prod/
+│       ├── CLAUDE.md               ← customer AAD prod schema and environment
+│       ├── sprocs/
+│       ├── queries/
+│       └── scripts/
 ```
 
 You can create this from the terminal:
 
 ```bash
-mkdir -p ~/sql/customer-name/environment/sprocs
-mkdir -p ~/sql/customer-name/environment/queries
-mkdir -p ~/sql/customer-name/environment/scripts
+mkdir -p ~/sql/customer-name/aad-dev
+mkdir -p ~/sql/customer-name/aad-uat
+mkdir -p ~/sql/customer-name/aad-prod/sprocs
+mkdir -p ~/sql/customer-name/aad-prod/queries
+mkdir -p ~/sql/customer-name/aad-prod/scripts
 ```
 
 ---
@@ -44,7 +50,7 @@ mkdir -p ~/sql/customer-name/environment/scripts
 The `CLAUDE.md` in the environment folder is what gives Claude Code context about that specific database. Create one there:
 
 ```bash
-touch ~/sql/customer-name/environment/CLAUDE.md
+touch ~/sql/customer-name/aad-prod/CLAUDE.md
 ```
 
 Then open it and fill it in. Here's a starting template:
@@ -80,7 +86,7 @@ The more you put in here, the less you have to explain in each session. Schema d
 Always open Claude Code from inside the environment folder so it picks up the right `CLAUDE.md`. It will also inherit the global `CLAUDE.md` from `~/sql/` automatically.
 
 ```bash
-cd ~/sql/customer-name/environment
+cd ~/sql/customer-name/aad-prod
 claude
 ```
 
@@ -178,7 +184,7 @@ so I can safely run it against the real database. Save it to scripts/test_usp_Ge
 
 ## What this looks like end to end
 
-1. Open terminal, `cd ~/sql/customer-name/environment`, run `claude`
+1. Open terminal, `cd ~/sql/customer-name/aad-prod`, run `claude`
 2. Ask Claude to write or modify a procedure — it reads the `CLAUDE.md` automatically
 3. Claude creates or edits the `.sql` file in the folder
 4. Open the file in SSMS and run it
