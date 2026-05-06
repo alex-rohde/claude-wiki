@@ -796,10 +796,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#setting-up-a-new-account" class="md-nav__link">
+  <a href="#setting-up-a-new-customerenvironment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Setting up a new account
+        Setting up a new customer/environment
       
     </span>
   </a>
@@ -807,10 +807,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-global-claudemd-caveat" class="md-nav__link">
+  <a href="#what-goes-where" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The global CLAUDE.md caveat
+        What goes where
       
     </span>
   </a>
@@ -1097,10 +1097,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#setting-up-a-new-account" class="md-nav__link">
+  <a href="#setting-up-a-new-customerenvironment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Setting up a new account
+        Setting up a new customer/environment
       
     </span>
   </a>
@@ -1108,10 +1108,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-global-claudemd-caveat" class="md-nav__link">
+  <a href="#what-goes-where" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The global CLAUDE.md caveat
+        What goes where
       
     </span>
   </a>
@@ -1136,28 +1136,33 @@
 
 
 <h1 id="managing-multiple-claudemd-files">Managing Multiple CLAUDE.md Files</h1>
-<p>If you work across multiple accounts or databases, you need each one to have its own isolated context. Claude Code loads <code>CLAUDE.md</code> based on the directory you start it from, so the solution is one directory per account, each with its own <code>CLAUDE.md</code>.</p>
+<p>If you work across multiple customers or databases, you need each one to have its own isolated context. Claude Code loads <code>CLAUDE.md</code> based on the directory you start it from — and inherits from every parent folder up to your home directory. The structure below takes advantage of that to share global conventions while keeping each database isolated.</p>
 <hr />
 <h2 id="directory-structure">Directory structure</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>~/
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── eplus-aad/
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   └── CLAUDE.md        ← ePlus AAD context only
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── customer2-sqldb/
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   └── CLAUDE.md        ← Customer 2 context only
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>└── customer3-erp/
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    └── CLAUDE.md        ← Customer 3 context only
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>~/sql/
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── CLAUDE.md                        ← global conventions (applies to all sessions)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── eplus/
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── aad/
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   │   └── CLAUDE.md               ← ePlus AAD schema and environment
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── wms/
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│       └── CLAUDE.md               ← ePlus WMS schema and environment
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>├── customer2/
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   └── prod/
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│       └── CLAUDE.md               ← Customer 2 production schema
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>└── customer3/
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    └── dev/
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        └── CLAUDE.md               ← Customer 3 dev schema
 </code></pre></div>
-<p>When you start Claude Code from <code>~/eplus-aad/</code>, it loads only that folder's <code>CLAUDE.md</code>. Starting from <code>~/customer2-sqldb/</code> loads only that one. No context bleed between accounts.</p>
+<p>When you start Claude Code from <code>~/sql/eplus/aad/</code>, it loads that folder's <code>CLAUDE.md</code> <strong>plus</strong> <code>~/sql/CLAUDE.md</code>. Starting from <code>~/sql/customer2/prod/</code> loads that one plus the global. No context bleed between customers or environments.</p>
 <hr />
-<h2 id="setting-up-a-new-account">Setting up a new account</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mkdir<span class="w"> </span>~/customer-name-db
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>~/customer-name-db
+<h2 id="setting-up-a-new-customerenvironment">Setting up a new customer/environment</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/sql/customer-name/environment
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>~/sql/customer-name/environment
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>claude
 </code></pre></div>
-<p>Then follow the <a href="../creating-claude-md/">Creating a CLAUDE.md</a> process from inside that directory. Each account gets its own folder and its own <code>CLAUDE.md</code> built from that customer's schema export.</p>
+<p>Then follow the <a href="../creating-claude-md/">Creating a CLAUDE.md</a> process from inside that directory. Each environment gets its own <code>CLAUDE.md</code> built from that customer's schema export.</p>
 <hr />
-<h2 id="the-global-claudemd-caveat">The global CLAUDE.md caveat</h2>
-<p><code>~/CLAUDE.md</code> (your home directory) loads for <strong>every</strong> Claude Code session started from <code>~</code> or any subdirectory. Anything account-specific placed there (schema, DB name, customer name, coding conventions, etc) will bleed into every other account's sessions.</p>
+<h2 id="what-goes-where">What goes where</h2>
 <table>
 <thead>
 <tr>
@@ -1168,23 +1173,23 @@
 </thead>
 <tbody>
 <tr>
-<td><code>~/CLAUDE.md</code></td>
-<td>Every session</td>
-<td>Global preferences only (tone, general coding style)</td>
+<td><code>~/sql/CLAUDE.md</code></td>
+<td>Every session started under <code>~/sql/</code></td>
+<td>Global SQL conventions — formatting rules, <code>usp_</code> prefix, <code>SET NOCOUNT ON</code>, etc.</td>
 </tr>
 <tr>
-<td><code>~/eplus-aad/CLAUDE.md</code></td>
+<td><code>~/sql/eplus/aad/CLAUDE.md</code></td>
 <td>Sessions started from that folder</td>
-<td>ePlus AAD schema, conventions, environment</td>
+<td>ePlus AAD schema, table definitions, environment-specific notes</td>
 </tr>
 <tr>
-<td><code>~/customer2-sqldb/CLAUDE.md</code></td>
+<td><code>~/sql/customer2/prod/CLAUDE.md</code></td>
 <td>Sessions started from that folder</td>
-<td>Customer 2 schema, conventions, environment</td>
+<td>Customer 2 production schema, conventions, environment</td>
 </tr>
 </tbody>
 </table>
-<p>Keep account-specific context (schema, DB name, customer, coding conventions) in the project-level <code>CLAUDE.md</code>, not the home-level one.</p>
+<p>Keep schema and customer-specific context in the environment-level <code>CLAUDE.md</code>. Put conventions that apply to all your SQL work in <code>~/sql/CLAUDE.md</code>.</p>
 
 
 
