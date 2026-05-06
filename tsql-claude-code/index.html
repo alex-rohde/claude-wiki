@@ -1388,23 +1388,29 @@
 <h3 id="step-1-create-the-folder-structure">Step 1 — Create the folder structure</h3>
 <p>Create a dedicated folder for the customer and environment. The top-level <code>~/sql/</code> folder holds a global <code>CLAUDE.md</code> with conventions that apply everywhere. Each customer/environment pair gets its own subfolder with a <code>CLAUDE.md</code> scoped to that database.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>~/sql/
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  CLAUDE.md                        ← global conventions (applies to all sessions)
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  customer-name/
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    environment/                   ← e.g., prod, dev, aad, wms
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>      CLAUDE.md                    ← schema and conventions for this customer/environment
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>      sprocs/
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>      queries/
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>      scripts/
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── CLAUDE.md                        ← global conventions (applies to all sessions)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── customer-name/
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── aad-dev/
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   │   └── CLAUDE.md               ← customer AAD dev schema and environment
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   ├── aad-uat/
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   │   └── CLAUDE.md               ← customer AAD UAT schema and environment
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   └── aad-prod/
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│       ├── CLAUDE.md               ← customer AAD prod schema and environment
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│       ├── sprocs/
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│       ├── queries/
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│       └── scripts/
 </code></pre></div>
 <p>You can create this from the terminal:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/sql/customer-name/environment/sprocs
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/sql/customer-name/environment/queries
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/sql/customer-name/environment/scripts
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/sql/customer-name/aad-dev
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/sql/customer-name/aad-uat
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/sql/customer-name/aad-prod/sprocs
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/sql/customer-name/aad-prod/queries
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/sql/customer-name/aad-prod/scripts
 </code></pre></div>
 <hr />
 <h3 id="step-2-create-the-claudemd">Step 2 — Create the CLAUDE.md</h3>
 <p>The <code>CLAUDE.md</code> in the environment folder is what gives Claude Code context about that specific database. Create one there:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>touch<span class="w"> </span>~/sql/customer-name/environment/CLAUDE.md
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>touch<span class="w"> </span>~/sql/customer-name/aad-prod/CLAUDE.md
 </code></pre></div>
 <p>Then open it and fill it in. Here's a starting template:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gh"># Customer Name — SQL Context</span>
@@ -1431,7 +1437,7 @@
 <hr />
 <h3 id="step-3-open-claude-code-in-the-folder">Step 3 — Open Claude Code in the folder</h3>
 <p>Always open Claude Code from inside the environment folder so it picks up the right <code>CLAUDE.md</code>. It will also inherit the global <code>CLAUDE.md</code> from <code>~/sql/</code> automatically.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">cd</span><span class="w"> </span>~/sql/customer-name/environment
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">cd</span><span class="w"> </span>~/sql/customer-name/aad-prod
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>claude
 </code></pre></div>
 <p>From that point on, Claude Code knows both the global conventions and the customer's specific schema, and can read or write any <code>.sql</code> file in the folder.</p>
@@ -1493,7 +1499,7 @@
 <hr />
 <h2 id="what-this-looks-like-end-to-end">What this looks like end to end</h2>
 <ol>
-<li>Open terminal, <code>cd ~/sql/customer-name/environment</code>, run <code>claude</code></li>
+<li>Open terminal, <code>cd ~/sql/customer-name/aad-prod</code>, run <code>claude</code></li>
 <li>Ask Claude to write or modify a procedure — it reads the <code>CLAUDE.md</code> automatically</li>
 <li>Claude creates or edits the <code>.sql</code> file in the folder</li>
 <li>Open the file in SSMS and run it</li>

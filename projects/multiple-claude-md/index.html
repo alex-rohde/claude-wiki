@@ -1142,18 +1142,21 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>~/sql/
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── CLAUDE.md                        ← global conventions (applies to all sessions)
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── eplus/
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── aad/
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   │   └── CLAUDE.md               ← ePlus AAD schema and environment
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── wms/
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│       └── CLAUDE.md               ← ePlus WMS schema and environment
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>├── customer2/
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   └── prod/
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│       └── CLAUDE.md               ← Customer 2 production schema
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>└── customer3/
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    └── dev/
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        └── CLAUDE.md               ← Customer 3 dev schema
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── aad-dev/
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   │   └── CLAUDE.md               ← ePlus AAD dev schema and environment
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   ├── aad-uat/
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   │   └── CLAUDE.md               ← ePlus AAD UAT schema and environment
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   └── aad-prod/
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│       └── CLAUDE.md               ← ePlus AAD prod schema and environment
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>└── customer2/
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    ├── aad-dev/
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    │   └── CLAUDE.md               ← Customer 2 AAD dev schema
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    ├── aad-uat/
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    │   └── CLAUDE.md               ← Customer 2 AAD UAT schema
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    └── aad-prod/
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        └── CLAUDE.md               ← Customer 2 AAD prod schema
 </code></pre></div>
-<p>When you start Claude Code from <code>~/sql/eplus/aad/</code>, it loads that folder's <code>CLAUDE.md</code> <strong>plus</strong> <code>~/sql/CLAUDE.md</code>. Starting from <code>~/sql/customer2/prod/</code> loads that one plus the global. No context bleed between customers or environments.</p>
+<p>When you start Claude Code from <code>~/sql/eplus/aad-prod/</code>, it loads that folder's <code>CLAUDE.md</code> <strong>plus</strong> <code>~/sql/CLAUDE.md</code>. Starting from <code>~/sql/customer2/aad-dev/</code> loads that one plus the global. No context bleed between customers or environments.</p>
 <hr />
 <h2 id="setting-up-a-new-customerenvironment">Setting up a new customer/environment</h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/sql/customer-name/environment
@@ -1178,14 +1181,14 @@
 <td>Global SQL conventions — formatting rules, <code>usp_</code> prefix, <code>SET NOCOUNT ON</code>, etc.</td>
 </tr>
 <tr>
-<td><code>~/sql/eplus/aad/CLAUDE.md</code></td>
+<td><code>~/sql/eplus/aad-prod/CLAUDE.md</code></td>
 <td>Sessions started from that folder</td>
-<td>ePlus AAD schema, table definitions, environment-specific notes</td>
+<td>ePlus AAD prod schema, table definitions, environment-specific notes</td>
 </tr>
 <tr>
-<td><code>~/sql/customer2/prod/CLAUDE.md</code></td>
+<td><code>~/sql/customer2/aad-dev/CLAUDE.md</code></td>
 <td>Sessions started from that folder</td>
-<td>Customer 2 production schema, conventions, environment</td>
+<td>Customer 2 AAD dev schema, conventions, environment</td>
 </tr>
 </tbody>
 </table>
