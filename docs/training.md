@@ -11,9 +11,9 @@
 
 ### Agenda
 
-1. What Claude is — an AI coding assistant, not a search engine
+1. What Claude is — an AI coding assistant, not a search engine (wiki reference: [What is AI?](getting-started/what-is-ai.md))
 2. What it's good at vs. where it falls short
-3. Data privacy — what goes to Anthropic, what doesn't
+3. Data privacy — what goes to Anthropic, what doesn't (wiki reference: [Data Privacy](data-privacy.md))
 4. Live demo: paste a query, ask Claude to explain it, then improve it
 5. Live demo: describe a problem in plain English, let Claude write the first draft
 
@@ -28,7 +28,7 @@
 
 ## Session 2 — Cowork (Claude Desktop)
 
-**Format:** 45-60 min | **Tool:** Claude Desktop — Cowork
+**Format:** 45-60 min | **Tool:** Claude Cowork
 
 ### Agenda
 
@@ -77,10 +77,10 @@
 ### Agenda
 
 1. Giving Claude the right context for SQL work (schema, platform, conventions)
-2. Briefly discuss how Claude uses the sproc template and coding examples
+2. Briefly discuss how Claude uses the sproc template and coding examples (wiki reference: [T-SQL Claude.ai Web](tsql-ssms.md), [T-SQL Claude Code](tsql-claude-code.md))
 3. Live demo: prompt Claude to build a sproc from a plain English description
 4. Live demo: paste an existing sproc, ask Claude to add error handling or a new param
-5. Prompting tips specific to T-SQL
+5. Prompting tips specific to T-SQL (wiki reference: [Best Practices](best-practices.md), [T-SQL Automated Testing](tsql-automated-testing.md))
 
 ### Talking Points
 
