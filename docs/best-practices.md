@@ -42,3 +42,48 @@ You don't need to tell Claude which functions to call or how to implement someth
 
 > Instead of: "Call the `validateToken` function and check the `exp` field"  
 > Try: "Add JWT expiry validation to the auth middleware"
+
+---
+
+## Prompt writing tips
+
+### Specify the format you want
+
+If you have a preference for how Claude responds, say so. Claude will default to whatever format seems reasonable, which may not match what you need.
+
+- "Return only the SQL, no explanation"
+- "Give me a bulleted list"
+- "Keep the response under five sentences"
+- "Show me the updated function only, not the whole file"
+
+### Show an example of what you want
+
+When the format or style is hard to describe in words, give Claude an example. One example is often worth a paragraph of instructions.
+
+> "Format the output like this: `[ERROR] src/file.ts:42 — message`"
+
+### Tell Claude what to avoid
+
+If you know what you don't want, say it. This is especially useful when Claude tends to over-explain or add things you didn't ask for.
+
+- "Do not add comments to the code"
+- "Do not suggest refactoring anything outside of this function"
+- "Do not change the existing function signatures"
+
+### Structure long inputs clearly
+
+When your prompt includes a lot of content (a block of code, a log file, a data sample), separate it clearly from your question. Claude reads everything, but clear structure helps it focus on the right thing.
+
+````
+Here is the stored procedure:
+
+```sql
+-- paste here
+```
+
+Question: Why would this return duplicate rows?
+````
+
+### Iterate rather than restart
+
+If Claude's first response is close but not quite right, follow up with a correction rather than rewriting your entire prompt. Claude carries the full conversation history, so short follow-ups like "make it shorter" or "use a temp table instead" work well and are faster than starting over.
