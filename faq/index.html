@@ -1056,6 +1056,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#projects-and-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Projects and Memory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#claude-code" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1071,6 +1082,17 @@
     <span class="md-ellipsis">
       
         Claude Cowork
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sql-and-stored-procedures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SQL and Stored Procedures
       
     </span>
   </a>
@@ -1188,6 +1210,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#projects-and-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Projects and Memory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#claude-code" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1203,6 +1236,17 @@
     <span class="md-ellipsis">
       
         Claude Cowork
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sql-and-stored-procedures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SQL and Stored Procedures
       
     </span>
   </a>
@@ -1244,7 +1288,21 @@ No. All three tools — Claude.ai web, Claude Code, and Cowork — use the same 
 <p><strong>What plan do I need?</strong><br />
 Pro, Max, Team, or Enterprise. The free Claude.ai plan does not include Claude Code or Cowork access. Check with your manager if you're unsure what you've been provisioned.</p>
 <p><strong>Is my code sent to Anthropic?</strong><br />
-When you use Claude Code or paste code in the web interface, that content is sent to Anthropic's servers to generate a response. Check your company's data handling policy if you're working with sensitive or proprietary code.</p>
+When you use Claude Code or paste code in the web interface, that content is sent to Anthropic's servers to generate a response. Check your company's data handling policy if you're working with sensitive or proprietary code. See <a href="../data-privacy/">Data Privacy</a> for full details.</p>
+<p><strong>Can Claude remember our previous conversations?</strong><br />
+Not automatically. Claude only sees the current conversation. To carry context between sessions you have two options: use a Claude Project (web or Cowork) with a system prompt that describes your environment, or use a <code>CLAUDE.md</code> file in your project directory for Claude Code. See <a href="../projects/overview/">Projects and Memory</a>.</p>
+<p><strong>Why does Claude sometimes give wrong answers?</strong><br />
+Claude generates responses based on patterns learned during training — it doesn't look things up or verify facts in real time. It can produce a confident-sounding answer that is incorrect. Always review output before using it, especially for SQL, business logic, or anything with side effects. See <a href="../getting-started/what-is-ai/">What is AI?</a> for more context on how LLMs work.</p>
+<p><strong>Why am I getting generic or unhelpful responses?</strong><br />
+Usually one of three things: the prompt is too vague, Claude is missing context about your environment, or the conversation has accumulated too much noise. Try being more specific about what you want, give Claude your schema or file structure, or use <code>/clear</code> in Claude Code to reset the context. See <a href="../best-practices/">Best Practices</a>.</p>
+<hr />
+<h2 id="projects-and-memory">Projects and Memory</h2>
+<p><strong>What are Claude Projects?</strong><br />
+Projects are persistent workspaces available in both Claude.ai web and Claude Cowork. You add a system prompt with your stack, conventions, and standing rules — Claude applies that context to every conversation inside the project so you don't have to repeat it. See <a href="../projects/overview/">Projects Overview</a>.</p>
+<p><strong>What is a CLAUDE.md file?</strong><br />
+A <code>CLAUDE.md</code> is a plain text file that Claude Code reads automatically when you start a session in that directory. It serves as Claude's briefing document for the project — schema, naming conventions, environment details, standing rules. You can have a global one that applies everywhere and a project-level one for each codebase. See <a href="../projects/creating-claude-md/">Creating a CLAUDE.md</a>.</p>
+<p><strong>What's the difference between a Project and a CLAUDE.md?</strong><br />
+Projects are for Claude.ai web and Cowork — context lives in the system prompt. CLAUDE.md is for Claude Code — context lives in a file in your project directory. Both solve the same problem: giving Claude persistent context so it doesn't start from scratch every session.</p>
 <hr />
 <h2 id="claude-code">Claude Code</h2>
 <p><strong>Claude Code says <code>command not found</code> after installing.</strong><br />
@@ -1270,6 +1328,14 @@ Yes, for research tasks.</p>
 No. Cowork runs in a sandboxed virtual machine and cannot access other applications, browser sessions, or your system keychain.</p>
 <p><strong>Where does Cowork save output files?</strong><br />
 Wherever you tell it to in your prompt. Be explicit — e.g., "save to ~/Desktop/output.xlsx".</p>
+<hr />
+<h2 id="sql-and-stored-procedures">SQL and Stored Procedures</h2>
+<p><strong>Does Claude know our database schema?</strong><br />
+Not unless you tell it. Claude has no connection to your database. You need to provide the relevant <code>CREATE TABLE</code> scripts so it knows the column names, data types, and relationships. Paste them into your prompt, add them to a Claude Project, or include them in your <code>CLAUDE.md</code>. See <a href="../tsql-claude-code/">T-SQL Claude Code</a>.</p>
+<p><strong>Can Claude follow our stored procedure template?</strong><br />
+Yes, if you give it the template. The most reliable approach is to include the sproc template in your global <code>CLAUDE.md</code> so Claude Code applies it automatically. For the web, add it to your Project system prompt. See <a href="../projects/global-claude-md/">Global CLAUDE.md Setup</a>.</p>
+<p><strong>Claude wrote a sproc but it doesn't match our conventions. How do I fix that?</strong><br />
+Either give Claude the template directly in your prompt ("rewrite this following the template below: ...") or set up a CLAUDE.md or Project so it applies the conventions automatically every session. One-off fixes with a follow-up prompt work too — tell it specifically what to change ("use TRY/CATCH", "add SET NOCOUNT ON", "use the #tmp_ prefix").</p>
 <hr />
 <h2 id="didnt-find-your-answer">Didn't find your answer?</h2>
 <ul>
