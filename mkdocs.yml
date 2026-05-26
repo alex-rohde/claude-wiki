@@ -57,6 +57,10 @@ nav:
     - Session 2 - Cowork: training/session-2.md
     - Session 3 - Claude Code: training/session-3.md
     - Session 4 - SQL and Stored Procedures: training/session-4.md
+  - Soft Skills:
+    - Granola Meeting Transcription: soft-skills/granola.md
+    - Organizing Meeting Notes: soft-skills/meeting-notes.md
+    - Jira Reports with Cowork: soft-skills/jira-reports.md
   - Best Practices: best-practices.md
   - Data Privacy: data-privacy.md
   - FAQ: faq.md
